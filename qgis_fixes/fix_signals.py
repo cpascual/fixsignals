@@ -20,7 +20,7 @@ class FixSignals(fixer_base.BaseFix):
       '('
       arglist<
         sender=any ','
-        power< 'SIGNAL' trailer< '(' signal=any ')' > > ','
+        power< (any trailer< '.' 'SIGNAL' >|'SIGNAL') trailer< '(' signal=any ')' > > ','
         slot=any
       >
       ')'
@@ -32,7 +32,7 @@ class FixSignals(fixer_base.BaseFix):
     trailer<
       '('
         args=arglist<
-            power< 'SIGNAL' trailer< '(' signal=any ')' > >
+            power< (any trailer< '.' 'SIGNAL' >|'SIGNAL') trailer< '(' signal=any ')' > >
             ( ',' any )*
         >
       ')'
@@ -43,7 +43,7 @@ class FixSignals(fixer_base.BaseFix):
     emitter=any trailer< '.' 'emit' >
     trailer<
       '('
-        args=power< 'SIGNAL' trailer< '(' signal=any ')' > >
+        args=power< (any trailer< '.' 'SIGNAL' >|'SIGNAL') trailer< '(' signal=any ')' > >
       ')'
     >
   >
