@@ -1,6 +1,6 @@
 """Migrate signals from old style to new style
 """
-# Author: Juergen E. Fischer
+# Adapted from work by Juergen E. Fischer @ qgis project
 
 # .connect( sender, signal, receiver, slot )
 
@@ -49,17 +49,28 @@ class FixSignals(fixer_base.BaseFix):
   >
   )
 """
+    SIGPATTERN = re.compile('(["\'])([^(]+)(\(.*\))?\\1')
 
-#    def match(self, node):
-#        res = super(FixSignals, self).match( node )
-#        r = repr(node)
-#        if "emit" in r:
-#            print "yes" if res else "no", ": ", r
-#        return res
+    def match(self, node):
+        results = super(FixSignals, self).match(node)
+
+        if not results:
+            return results
+
+        try:
+            signal = results.get("signal").value # attibute error if signal is a node
+            signame = self.SIGPATTERN.match(signal).groups()[1] # AttributeError if not match
+            results["signame"] = signame.strip()
+        except AttributeError:
+            print "Non trivial signal found: ", repr(node)
+            return False
+
+        return results
 
     def transform(self, node, results):
-        signal = results.get("signal").value
-        signal = re.sub('^["\']([^(]+)(?:\(.*\))?["\']$', '\\1', signal)
+        # signal = results.get("signal").value
+        # signame = re.sub('^["\']([^(]+)(?:\(.*\))?["\']$', '\\1', signal)
+        signame = results['signame']
 
         if 'emitter' in results:
             emitter = results.get("emitter").clone()
@@ -68,7 +79,7 @@ class FixSignals(fixer_base.BaseFix):
             args.children = args.children[2:]
             if args.children:
                 args.children[0].prefix = ''
-            res = Node(syms.power, [emitter, Name('.'), Name(signal), Name('.'), Name('emit')] + [ArgList([args])])
+            res = Node(syms.power, [emitter, Name('.'), Name(signame), Name('.'), Name('emit')] + [ArgList([args])])
         else:
             sender = results.get("sender").clone()
             method = results.get("method")
@@ -78,5 +89,5 @@ class FixSignals(fixer_base.BaseFix):
             sender.prefix = node.prefix
             slot = results.get("slot").clone()
             slot.prefix = ""
-            res = Node(syms.power, [sender, Name('.'), Name(signal), Name('.'), method] + [ArgList([slot])])
+            res = Node(syms.power, [sender, Name('.'), Name(signame), Name('.'), method] + [ArgList([slot])])
         return res
