@@ -168,5 +168,5 @@ RefactoringTool: example.py
 
 Interesting references
 ----------------------
-Understanding custom lib2to3 fixers: http://python3porting.com/fixers.html
-New style signals: http://pyqt.sourceforge.net/Docs/PyQt4/new_style_signals_slots.html
+1. Understanding custom lib2to3 fixers: http://python3porting.com/fixers.html
+2. New style signals: http://pyqt.sourceforge.net/Docs/PyQt4/new_style_signals_slots.html
