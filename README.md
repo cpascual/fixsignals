@@ -164,6 +164,8 @@ RefactoringTool: Refactored example.py
 RefactoringTool: Writing converted example.py to outdir/example.py.
 RefactoringTool: Files that were modified:
 RefactoringTool: example.py
-
-
 ~~~~
+
+Interesting references
+----------------------
+Understanding custom lib2to3 fixers: http://python3porting.com/fixers.html
