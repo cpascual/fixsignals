@@ -72,7 +72,7 @@ class FixSignals(fixer_base.BaseFix):
 
     def _findClassName(self, node):
         n=node
-        while n is not None and n.type!=266: # UGLY but aparently works; 266 seems to correspond to a class...
+        while n is not None and n.type != syms.classdef:
             n=n.parent
         leaves = n.leaves()
         leaves.next()
