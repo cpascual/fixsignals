@@ -1,10 +1,13 @@
-Intro
------
+# Intro
 
-This project provides a fixer plugin for the lib2to3 module
-to migrate old style Qt signals to new-style ones.
+This project provides two fixer plugins for the lib2to3 module:
 
-**Warning:** this is an ugly hack. Mostly for use in converting the taurus project signals 
+1. `signals` to migrate old style Qt signals to new-style ones.
+2. `args` to migrate `QString.arg` calls in Python `string.format`.
+
+## Signals
+
+**Warning:** this is an ugly hack. Mostly for use in converting the taurus project signals
 (see https://sf.net/p/tauruslib/tickets/187/).
 The fixer can be invoked with the provided 'my2to3' script.
 
@@ -15,8 +18,7 @@ It is based on [code from qgis](https://github.com/qgis/QGIS/blob/master/scripts
 When run, it does its best in automating the migration and leaves a
 `SIGNALS_TODO.log` file with notes of identified things that need manual tweaking.
 
-Usage
------
+### Usage
 
 `my2to3 -f signals [options] <dir_or_file_to_fix>`
 
@@ -25,7 +27,7 @@ Use`my2to3 -h` for info on available options inherited from `2to3`
 
 For example:
 
-`my2to3 -f signals -w example.py`
+`my2to3 -f signals -w example-signals.py`
 
 When converting a full package instead of a small file, I recommend to redirect the output to a file for
 future reference. e.g.:
@@ -33,10 +35,9 @@ future reference. e.g.:
 `my2to3 -f signals -w ~/src/taurus/lib > signalschange.log`
 
 
-Example
--------
+### Example
 
-Now let's see an example. Consider the following code from the example.py:
+Now let's see an example. Consider the following code from the example-signals.py:
 
 ~~~~
 from PyQt4 import Qt
@@ -64,9 +65,9 @@ class MyWidget(Qt.QWidget):
 
 If we run the script with:
 
-`my2to3 -f signals -nwo outdir example.py`
+`my2to3 -f signals -nwo outdir example-signals.py`
 
-We get the following transformed `outdir/example.py` file :
+We get the following transformed `outdir/example-signals.py` file :
 
 ~~~~
 from PyQt4 import Qt
@@ -128,7 +129,7 @@ NOT_CONVERTED:
 Finally, note that the stdout has interesting info
 
 ~~~~
-$ ./my2to3 -f signals -nwo outdir example.py
+$ ./my2to3 -f signals -nwo outdir example-signals.py
 lib2to3.main: Output in 'outdir' will mirror the input directory '' layout.
 root: Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
 
@@ -147,9 +148,9 @@ self.connect(self, MY_SIG, self.myslot)
 SKIPPING non trivial signal:
         self.emit(MY_SIG, 5, 6)
 
-RefactoringTool: Refactored example.py
---- example.py  (original)
-+++ example.py  (refactored)
+RefactoringTool: Refactored example-signals.py
+--- example-signals.py  (original)
++++ example-signals.py  (refactored)
 @@ -6,8 +6,8 @@
  class MyWidget(Qt.QWidget):
  
@@ -161,12 +162,44 @@ RefactoringTool: Refactored example.py
  
      def m2(self):
          self.connect(self, Qt.SIGNAL(MY_SIGNATURE), self.myslot)
-RefactoringTool: Writing converted example.py to outdir/example.py.
+RefactoringTool: Writing converted example-signals.py to outdir/example-signals.py.
 RefactoringTool: Files that were modified:
-RefactoringTool: example.py
+RefactoringTool: example-signals.py
 ~~~~
 
-Interesting references
-----------------------
+
+## Args
+
+### Usage
+
+`my2to3 -f args [options] <dir_or_file_to_fix>`
+
+For example:
+
+`my2to3 -f args -w example-args.py`
+
+Outputs:
+
+~~~
+root: Generating grammar tables from /usr/lib/python3.5/lib2to3/PatternGrammar.txt
+RefactoringTool: Refactored example-args.py
+--- example-args.py	(original)
++++ example-args.py	(refactored)
+@@ -2,6 +2,6 @@
+ 
+ class Window(QLabel):
+     def foo(self, value, tr=None):
+-        self.tr("Messaggio %1").arg(self.getText())  # cose
+-        tr("Messaggio %1 e %2").arg(self.getText()).arg(value)
+-        qApp.translate("Messaggio %1 e %2").arg(self.getText(), value)
++        self.tr("Messaggio {0}").format(self.getText())  # cose
++        tr("Messaggio {0} e {1}").format(self.getText(), value)
++        qApp.translate("Messaggio {0} e {1}").format(self.getText(), value)
+RefactoringTool: Files that need to be modified:
+RefactoringTool: example-args.py
+~~~
+
+
+# Interesting references
 1. Understanding custom lib2to3 fixers: http://python3porting.com/fixers.html
 2. New style signals: http://pyqt.sourceforge.net/Docs/PyQt4/new_style_signals_slots.html
