@@ -167,6 +167,12 @@ RefactoringTool: Files that were modified:
 RefactoringTool: example-signals.py
 ~~~~
 
+### Note of caution for overloaded signals
+
+Currently, the signals fixer ignores the types in the signal signatures. This may be problematic in some cases for overloaded signals connected to overloaded slots: while PyQt will usually select the appropriate overload depending on the slot to which the signal is connected, this may not work as expected if the slot itself has optional parameters (i.e. if it is also "overloaded"). In those cases, an explicit selection of the right type should be manually done in the emit call.
+
+*TODO: I haven't bothered to look, but it seems that this could be automated by making the fixer explicit the type when translating emit calls.*
+
 
 ## Args
 
