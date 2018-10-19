@@ -23,7 +23,7 @@ class FixArgs(fixer_base.BaseFix):
     PATTERN = """
     power<
       before=any*
-      tr=('tr' | 'translate') trailer< '(' message=any ')' >
+      tr=('tr' | 'translate' | 'QString') trailer< '(' message=any ')' >
       {args}
       rest=any*
     >
@@ -38,9 +38,11 @@ class FixArgs(fixer_base.BaseFix):
     def transform(self, node, results):
         # before
         before = [b.clone() for b in results['before']]
-        # tr | translate
+        # tr | translate | QString
         tr = results['tr']
         new_tr = [(tr[0] if isinstance(tr, list) else tr).clone()]
+        if isinstance(new_tr[0], Leaf) and new_tr[0].value == "QString":
+            new_tr = []  # remove QString, keep parentheses
         # message
         message = results['message'].clone()
         for ch in (message.pre_order() if not isinstance(message, Leaf) else [message]):
