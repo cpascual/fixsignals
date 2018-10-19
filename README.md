@@ -186,21 +186,23 @@ For example:
 
 Outputs:
 
-~~~
-root: Generating grammar tables from /usr/lib/python3.5/lib2to3/PatternGrammar.txt
+~~~diff
 RefactoringTool: Refactored example-args.py
 --- example-args.py	(original)
 +++ example-args.py	(refactored)
-@@ -2,6 +2,6 @@
- 
+@@ -2,8 +2,8 @@
  class Window(QLabel):
      def foo(self, value, tr=None):
--        self.tr("Messaggio %1").arg(self.getText())  # cose
--        tr("Messaggio %1 e %2").arg(self.getText()).arg(value)
--        qApp.translate("Messaggio %1 e %2").arg(self.getText(), value)
-+        self.tr("Messaggio {0}").format(self.getText())  # cose
-+        tr("Messaggio {0} e {1}").format(self.getText(), value)
-+        qApp.translate("Messaggio {0} e {1}").format(self.getText(), value)
+-        self.tr("Message %1").arg(self.getText())  # some comment
+-        tr("Message %1 and %2").arg(self.getText()).arg(value)
+-        qApp.translate("Message %1 and %2").arg(self.getText(), value)
+-        QString("Message %1 and %2").arg(self.getText(), value)
+-        print(tr("Some message %1").arg(value))
++        self.tr("Message {0}").format(self.getText())  # some comment
++        tr("Message {0} and {1}").format(self.getText(), value)
++        qApp.translate("Message {0} and {1}").format(self.getText(), value)
++        ("Message {0} and {1}").format(self.getText(), value)
++        print(tr("Some message {0}").format(value))
 RefactoringTool: Files that need to be modified:
 RefactoringTool: example-args.py
 ~~~
